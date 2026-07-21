@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroOps - Autonomous AI Workforce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"></path>
+        </svg>
+      </div>
+      <div>
+        <h1>NeuroOps</h1>
+        <span class="tagline">Autonomous AI Workforce for Software Teams</span>
+      </div>
+    </div>
+    <div class="status-cluster">
+      <span id="ws-status" class="pill pill-offline">Socket: Disconnected</span>
+      <span id="api-status" class="pill pill-checking">API: Checking</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Agents</span>
+        <span id="stat-agents" class="stat-value">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Tasks</span>
+        <span id="stat-tasks" class="stat-value">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Schedules</span>
+        <span id="stat-schedules" class="stat-value">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Events</span>
+        <span id="stat-events" class="stat-value">0</span>
+      </div>
+    </section>
+
+    <section class="panels">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Agents</h2>
+          <button id="btn-refresh-agents" class="btn btn-ghost">Refresh</button>
+        </div>
+        <div id="agent-list" class="card-list"><p class="empty">No agents registered.</p></div>
+        <form id="agent-form" class="inline-form">
+          <input type="text" name="name" placeholder="Agent name" required />
+          <input type="text" name="role" placeholder="Role (e.g. reviewer)" required />
+          <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Tasks</h2>
+          <button id="btn-refresh-tasks" class="btn btn-ghost">Refresh</button>
+        </div>
+        <div id="task-list" class="card-list"><p class="empty">No tasks yet.</p></div>
+        <form id="task-form" class="inline-form">
+          <input type="text" name="title" placeholder="Task title" required />
+          <select name="priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Live Event Stream</h2>
+        <button id="btn-clear-log" class="btn btn-ghost">Clear</button>
+      </div>
+      <div id="event-log" class="event-log"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>NeuroOps Phase 1 - Foundation</span>
+    <span id="clock"></span>
+  </footer>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

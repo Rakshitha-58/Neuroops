@@ -1,0 +1,8 @@
+{
+  "name": "neuroops",
+  "private": true,
+  "scripts": {
+    "build": "pip install --break-system-packages -r backend/requirements.txt && python3 -c \"import sys; sys.path.insert(0,'backend'); from app import create_app; app,_=create_app(); print('NeuroOps build OK')\"",
+    "start": "python3 backend/app.py"
+  }
+}
