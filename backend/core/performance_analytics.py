@@ -46,6 +46,7 @@ class PerformanceAnalytics:
         total_tasks = total_completed + total_failed
         all_conf = [p.get("avg_confidence", 0) for p in all_perf.values() if p.get("avg_confidence")]
         all_times = [p.get("avg_exec_time_ms", 0) for p in all_perf.values() if p.get("avg_exec_time_ms")]
+        estimated_tokens = total_tasks * 1200
         return {
             "total_tasks": total_tasks,
             "total_completed": total_completed,
@@ -54,6 +55,8 @@ class PerformanceAnalytics:
             "system_avg_confidence": sum(all_conf) / max(1, len(all_conf)),
             "system_avg_exec_time_ms": sum(all_times) / max(1, len(all_times)),
             "active_agents": len(all_perf),
+            "estimated_token_cost": round(estimated_tokens * 0.00001, 4),
+            "model_usage": {"stub": max(1, total_tasks), "local": 0},
         }
 
     def get_all_agent_stats(self) -> Dict[str, Any]:

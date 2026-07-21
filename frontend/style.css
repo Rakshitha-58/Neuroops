@@ -60,12 +60,41 @@ body {
 
 .layout { max-width: 1400px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
 
-.request-bar form { display: flex; gap: 10px; }
+.request-bar { display: flex; flex-direction: column; gap: 8px; }
+.request-bar form { display: flex; gap: 10px; align-items: center; }
+.request-input-wrap { flex: 1; position: relative; }
+.modal-overlay {
+  position: fixed; inset: 0; display: grid; place-items: center; background: rgba(3, 7, 18, 0.82);
+  z-index: 200; padding: 18px;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  width: min(100%, 560px); background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 18px; box-shadow: var(--shadow); overflow: hidden;
+}
+.modal.prompt-modal { max-width: 720px; }
+.modal-header, .modal-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px; }
+.modal-header { border-bottom: 1px solid var(--border); }
+.modal-header h3 { margin: 0; font-size: 16px; }
+.modal-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+.modal-footer { border-top: 1px solid var(--border); }
+.modal-body label { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-dim); }
+.modal-body input, .modal-body select { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: var(--bg); color: var(--text); font: inherit; }
+.modal-body p { margin: 0; font-size: 13px; color: var(--text); }
+.modal-body pre { background: rgba(7, 11, 24, 0.9); border: 1px solid var(--border); border-radius: 14px; padding: 16px; white-space: pre-wrap; word-break: break-word; }
 .request-bar input {
-  flex: 1; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--border);
+  width: 100%; padding: 14px 56px 14px 18px; border-radius: 12px; border: 1px solid var(--border);
   background: var(--bg-card); color: var(--text); font-family: inherit; font-size: 15px;
 }
 .request-bar input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.18); }
+.voice-btn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  padding: 8px 10px; border-radius: 999px; min-width: 40px;
+}
+.voice-btn.listening {
+  background: var(--warning); border-color: var(--warning); color: #fff;
+}
+.voice-status { font-size: 12px; color: var(--text-dim); margin-left: 2px; }
 
 .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
 .stat-card {
@@ -78,9 +107,23 @@ body {
 .stat-value { font-size: 28px; font-weight: 700; font-family: var(--mono); }
 
 .viz-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
-.three-container { width: 100%; height: 340px; border-radius: 10px; overflow: hidden; background: #050810; border: 1px solid var(--border); }
+.three-container { width: 100%; height: 340px; border-radius: 10px; overflow: hidden; background: #050810; border: 1px solid var(--border); position: relative; }
 .viz-legend { display: flex; gap: 16px; padding: 8px 0; flex-wrap: wrap; }
 .viz-legend span { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-dim); }
+.viz-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 20;
+  background: rgba(5, 8, 16, 0.95);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  min-width: 160px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
 
 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .dot-sleeping { background: #4a5578; }
@@ -193,6 +236,15 @@ body {
 .final-report pre { background: var(--bg-elev); padding: 10px; border-radius: 8px; overflow-x: auto; }
 .final-report ul, .final-report ol { padding-left: 20px; }
 .final-report strong { color: var(--accent); }
+
+.plugin-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
+.plugin-row {
+  background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; display: flex; gap: 10px; align-items: center; justify-content: space-between; animation: fadeIn 0.25s;
+}
+.plugin-name { font-size: 12px; font-weight: 600; }
+.plugin-meta { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+.plugin-cap { font-size: 10px; color: var(--accent); font-family: var(--mono); }
 
 .approval-queue { display: flex; flex-direction: column; gap: 10px; }
 .approval-card {

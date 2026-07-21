@@ -22,6 +22,7 @@ from core.memory_service import memory_service
 from core.storage import session_store
 from core.task_planner import TaskPlanner
 from agents.registry import agent_registry
+from core.model_provider import model_manager
 
 
 class CEOAgent:
@@ -56,6 +57,8 @@ class CEOAgent:
             "continuation_context": continuation_context,
             "estimated_tasks": max(3, min(8, len(request.split()) // 5)),
             "departments_needed": self._identify_departments(request),
+            "model_hint": self._choose_model_hint(request),
+            "requires_approval": self._requires_approval(request),
             "timestamp": datetime.utcnow().isoformat(),
         }
         self.analysis = analysis
@@ -112,6 +115,20 @@ class CEOAgent:
             deps.append("communication")
         deps.append("memory")
         return list(dict.fromkeys(deps))
+
+    def _choose_model_hint(self, request: str) -> str:
+        r = request.lower()
+        if any(w in r for w in ["design", "ui", "ux", "wireframe"]):
+            return "gemini"
+        if any(w in r for w in ["debug", "security", "vulnerability", "review"]):
+            return "claude"
+        if any(w in r for w in ["build", "implement", "backend", "api"]):
+            return "openai"
+        return model_manager.provider_name
+
+    def _requires_approval(self, request: str) -> bool:
+        r = request.lower()
+        return any(w in r for w in ["delete", "deploy", "production", "migrate", "archive", "send email", "post to"])
 
     # ---- Step 2: Query Registry + Form Team ----
     def form_team(self, request: str) -> List[str]:

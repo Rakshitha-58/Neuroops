@@ -33,10 +33,15 @@
   <main class="layout">
     <section class="request-bar">
       <form id="request-form">
-        <input type="text" id="request-input" placeholder="Describe what you want the AI workforce to build, fix, test, or research..." required autocomplete="off" />
+        <div class="request-input-wrap">
+          <input type="text" id="request-input" placeholder="Describe what you want the AI workforce to build, fix, test, or research..." required autocomplete="off" />
+          <button type="button" id="voice-btn" class="btn btn-ghost voice-btn" title="Use voice input">🎙️</button>
+        </div>
         <button type="submit" id="submit-btn" class="btn btn-primary">Deploy Workforce</button>
         <button type="button" id="reset-btn" class="btn btn-ghost">Reset</button>
+        <button type="button" id="settings-btn" class="btn btn-ghost">⚙️ Settings</button>
       </form>
+      <div id="voice-status" class="voice-status">Tap the mic to speak your task to the voice agent.</div>
     </section>
 
     <section class="stats-grid">
@@ -50,7 +55,7 @@
 
     <section class="viz-row">
       <div class="panel viz-panel">
-        <div class="panel-head"><h2>Neuro Visualization Engine</h2><span class="hint">3D Agent Network</span></div>
+        <div class="panel-head"><h2>Neuro Visualization Engine</h2><button id="toggle-names" class="btn btn-ghost btn-sm">Show Agent Names</button></div>
         <div id="three-canvas" class="three-container"></div>
         <div class="viz-legend">
           <span><span class="dot dot-sleeping"></span>Sleeping</span>
@@ -93,9 +98,15 @@
       <div id="final-report" class="final-report"><p class="empty">The CEO will synthesize a final report after the workforce completes all tasks.</p></div>
     </section>
 
-    <section class="panel wide" id="approval-section" style="display:none;">
-      <div class="panel-head"><h2>Human Approval Queue</h2><span class="hint">Waiting for your decision</span></div>
-      <div id="approval-queue" class="approval-queue"></div>
+    <section class="panels">
+      <div class="panel">
+        <div class="panel-head"><h2>Plugin Registry</h2><span class="hint">Auto-registered integrations</span></div>
+        <div id="plugin-list" class="plugin-list"></div>
+      </div>
+      <div class="panel" id="approval-section" style="display:none;">
+        <div class="panel-head"><h2>Human Approval Queue</h2><span class="hint">Waiting for your decision</span></div>
+        <div id="approval-queue" class="approval-queue"></div>
+      </div>
     </section>
   </main>
 
@@ -103,6 +114,69 @@
     <span>NeuroOps Phase 3 - Autonomous Multi-Agent Intelligence with Dynamic Agent Selection</span>
     <span id="clock"></span>
   </footer>
+
+  <div id="settings-modal" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button id="settings-close" class="btn btn-ghost btn-sm">×</button>
+      </div>
+      <div class="modal-body">
+        <label>
+          <span>Provider</span>
+          <select id="provider-select">
+            <option value="stub">Stub</option>
+            <option value="openai">OpenAI</option>
+            <option value="gemini">Gemini</option>
+            <option value="claude">Claude</option>
+          </select>
+        </label>
+        <label>
+          <span>API Key</span>
+          <input type="password" id="api-key-input" placeholder="Optional API key" />
+        </label>
+        <label>
+          <span>Model Name</span>
+          <input type="text" id="model-input" placeholder="Optional model override" />
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button id="save-settings-btn" class="btn btn-primary">Save and Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="detail-modal" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Additional Request Details</h3>
+        <button id="detail-close" class="btn btn-ghost btn-sm">×</button>
+      </div>
+      <div class="modal-body">
+        <p>To complete this request, please provide more details. If you want a quick output, just enter the main requirements and click Build.</p>
+        <label><span>Goal</span><input id="detail-goal" type="text" placeholder="E.g. launch a landing page, create a task manager" /></label>
+        <label><span>Scope</span><input id="detail-scope" type="text" placeholder="E.g. pages, features, platform" /></label>
+        <label><span>Style / Tone</span><input id="detail-style" type="text" placeholder="E.g. modern, professional, playful" /></label>
+        <label><span>Extra requirements</span><input id="detail-features" type="text" placeholder="E.g. form, gallery, login, analytics" /></label>
+      </div>
+      <div class="modal-footer">
+        <button id="detail-save" class="btn btn-primary">Build</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="prompt-modal" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal prompt-modal">
+      <div class="modal-header">
+        <h3 id="prompt-title">Prompt Output</h3>
+        <button id="prompt-close" class="btn btn-ghost btn-sm">×</button>
+      </div>
+      <div id="prompt-body" class="modal-body"></div>
+      <div class="modal-footer">
+        <button id="prompt-dismiss" class="btn btn-sm btn-ghost">Close</button>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

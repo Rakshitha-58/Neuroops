@@ -134,12 +134,37 @@ class MemoryService:
         checkpoint = self.get_last_checkpoint()
         episodes = self.recall_episodes()
         agent_memories = session_store.get_memory(memory_type="agent")
+        semantic_memory = self.recall_knowledge()
+        project_memories = self.recall_project()
+        similar_projects = []
+        if project_memories:
+            similar_projects = [m.to_dict() for m in project_memories[-5:]]
         return {
             "last_checkpoint": checkpoint.to_dict() if checkpoint else None,
             "episode_count": len(episodes),
             "agent_memory_count": len(agent_memories),
+            "semantic_memory_count": len(semantic_memory),
+            "project_memory_count": len(project_memories),
             "recent_episodes": [e.to_dict() for e in episodes[-5:]],
             "recent_agent_memories": [m.to_dict() for m in agent_memories[-5:]],
+            "similar_projects": similar_projects,
+            "preferences": self._infer_preferences(),
+        }
+
+    def _infer_preferences(self) -> Dict[str, Any]:
+        recent = session_store.get_memory()
+        preferences = {"focus": [], "preferred_department": []}
+        for entry in recent[-10:]:
+            content = entry.content.lower()
+            if "frontend" in content or "ui" in content:
+                preferences["focus"].append("frontend")
+            if "backend" in content or "api" in content:
+                preferences["focus"].append("backend")
+            if "test" in content or "qa" in content:
+                preferences["focus"].append("testing")
+        return {
+            "focus": list(dict.fromkeys(preferences["focus"])),
+            "preferred_department": list(dict.fromkeys(preferences["preferred_department"])),
         }
 
 

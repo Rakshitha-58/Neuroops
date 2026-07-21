@@ -28,6 +28,7 @@ from core.approval_service import approval_service
 from core.event_bus import event_bus
 from core.memory_service import memory_service
 from core.performance_analytics import performance_analytics
+from core.plugin_manager import plugin_manager
 from core.storage import session_store
 from core.workflow import get_workflow
 from utils import handle_errors
@@ -198,3 +199,18 @@ def get_analytics():
         "system": performance_analytics.get_system_stats(),
         "agents": performance_analytics.get_all_agent_stats(),
     })
+
+
+@api_bp.route("/plugins", methods=["GET"])
+@handle_errors
+def list_plugins():
+    return jsonify(plugin_manager.list_plugins())
+
+
+@api_bp.route("/plugins/<plugin_name>/execute", methods=["POST"])
+@handle_errors
+def execute_plugin(plugin_name):
+    data = request.get_json(force=True) or {}
+    action = data.get("action", "status")
+    payload = data.get("payload")
+    return jsonify(plugin_manager.execute(plugin_name, action, payload))

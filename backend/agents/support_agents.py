@@ -66,3 +66,20 @@ class KnowledgeManagerAgent(BaseAgent):
         ))
         self.log("Memory consolidated and stored.")
         return resp.content, resp.confidence
+
+
+class VoiceAssistantAgent(BaseAgent):
+    department = "communication"
+    description = "Listens to spoken requests and translates them into clear task instructions for the workforce."
+    capabilities = ["voice_interaction", "speech_to_text", "task_translation", "assistant_routing"]
+    tools = ["speech_recognition", "voice_ui", "task_router"]
+    model_preference = "stub"
+
+    def think(self, task: Task) -> tuple[str, float]:
+        self.log("Routing spoken request into the workforce workflow...")
+        resp = self.call_model(
+            "You are a voice assistant. Produce a concise, actionable task summary from the user's request.",
+            f"Task: {task.title}\nDescription: {task.description}",
+        )
+        self.log("Voice request translated for the workforce.")
+        return resp.content, resp.confidence

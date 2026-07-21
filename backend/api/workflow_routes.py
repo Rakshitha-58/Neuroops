@@ -19,20 +19,43 @@ from core.event_bus import event_bus
 from core.storage import session_store
 from core.workflow import get_workflow
 from agents.registry import all_agent_metadata
+from core.model_provider import ModelManager
 from utils import handle_errors
 
 workflow_bp = Blueprint("workflow", __name__, url_prefix="/api/workflow")
 
 
+def build_prompt_output(request_text: str, provider: str = "stub", api_key: str = "", model_name: str = "") -> str:
+    manager = ModelManager()
+    manager.configure(provider, api_key, model_name)
+    response = manager.generate(
+        "You are NeuroOps, an autonomous AI workforce coordinator.",
+        f"Please help with the following request and provide a concise response:\n\n{request_text}",
+    )
+    provider_label = response.provider
+    model_label = response.model
+    return (
+        f"Prompt: {request_text}\n"
+        f"Model: {provider_label}/{model_label}\n\n"
+        f"{response.content}"
+    )
+
+
 @workflow_bp.route("/submit", methods=["POST"])
 @handle_errors
 def submit_request():
-    data = request.get_json(force=True)
+    data = request.get_json(force=True) or {}
     user_request = data.get("request", "").strip()
     if not user_request:
         return jsonify({"error": "Request body is required"}), 400
 
+    provider = (data.get("provider") or "stub").strip() or "stub"
+    api_key = (data.get("api_key") or "").strip()
+    model_name = (data.get("model_name") or "").strip()
+    prompt_output = build_prompt_output(user_request, provider=provider, api_key=api_key, model_name=model_name)
+
     event_bus.emit("workflow:request_received", source="API", message=f"New request: {user_request[:80]}")
+    event_bus.emit("workflow:prompt_output_ready", source="API", message="Prompt response ready", data={"prompt_output": prompt_output, "provider": provider, "model_name": model_name or "default"})
 
     # Run the workflow in a background thread so events stream in real time.
     def _run():
@@ -48,6 +71,9 @@ def submit_request():
         "status": "accepted",
         "session_id": session_store.session_id,
         "message": "Workflow started. Listen to Socket.IO 'neuroops:event' for real-time updates.",
+        "prompt_output": prompt_output,
+        "provider": provider,
+        "model_name": model_name or "default",
     }), 202
 
 

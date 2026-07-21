@@ -35,6 +35,7 @@ from agents.support_agents import (
     KnowledgeManagerAgent,
     NotificationAgent,
     TaskPlannerAgent,
+    VoiceAssistantAgent,
 )
 
 
@@ -53,6 +54,7 @@ AGENT_TYPES: Dict[str, Type[BaseAgent]] = {
     "task_planner": TaskPlannerAgent,
     "notification": NotificationAgent,
     "knowledge_manager": KnowledgeManagerAgent,
+    "voice_assistant": VoiceAssistantAgent,
 }
 
 # Skill -> agent types that provide that skill
@@ -96,6 +98,10 @@ SKILL_INDEX: Dict[str, List[str]] = {
     "memory_consolidation": ["knowledge_manager"],
     "knowledge_retrieval": ["knowledge_manager"],
     "context_preservation": ["knowledge_manager"],
+    "voice_interaction": ["voice_assistant"],
+    "speech_to_text": ["voice_assistant"],
+    "task_translation": ["voice_assistant"],
+    "assistant_routing": ["voice_assistant"],
     "debugging": ["debugging"],
     "root_cause_analysis": ["debugging"],
     "fix_proposal": ["debugging"],
@@ -270,6 +276,11 @@ class AgentRegistry:
                 else:
                     states[at] = AgentState.SLEEPING.value
             return states
+
+
+def all_agent_metadata() -> List[Dict[str, Any]]:
+    """Return metadata for all registered agent types."""
+    return agent_registry.list_agents()
 
 
 # Singleton registry
