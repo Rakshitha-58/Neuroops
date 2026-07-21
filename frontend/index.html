@@ -6,7 +6,7 @@
   <title>NeuroOps - Autonomous AI Workforce</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -25,77 +25,66 @@
     </div>
     <div class="status-cluster">
       <span id="ws-status" class="pill pill-offline">Socket: Disconnected</span>
-      <span id="api-status" class="pill pill-checking">API: Checking</span>
+      <span id="workflow-status" class="pill pill-idle">Workflow: Idle</span>
     </div>
   </header>
 
   <main class="layout">
+    <!-- Request input -->
+    <section class="request-bar">
+      <form id="request-form">
+        <input type="text" id="request-input" placeholder="Describe what you want the AI workforce to build, fix, or research..." required autocomplete="off" />
+        <button type="submit" id="submit-btn" class="btn btn-primary">Deploy Workforce</button>
+        <button type="button" id="reset-btn" class="btn btn-ghost">Reset</button>
+      </form>
+    </section>
+
+    <!-- Stats -->
     <section class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-label">Agents</span>
-        <span id="stat-agents" class="stat-value">0</span>
+      <div class="stat-card"><span class="stat-label">Tasks</span><span id="stat-tasks" class="stat-value">0</span></div>
+      <div class="stat-card"><span class="stat-label">Agents Active</span><span id="stat-agents" class="stat-value">0</span></div>
+      <div class="stat-card"><span class="stat-label">Events</span><span id="stat-events" class="stat-value">0</span></div>
+      <div class="stat-card"><span class="stat-label">Memory</span><span id="stat-memory" class="stat-value">0</span></div>
+    </section>
+
+    <!-- 3D Visualization + Agent Grid -->
+    <section class="viz-row">
+      <div class="panel viz-panel">
+        <div class="panel-head"><h2>Neuro Visualization Engine</h2><span class="hint">3D Agent Network</span></div>
+        <div id="three-canvas" class="three-container"></div>
       </div>
-      <div class="stat-card">
-        <span class="stat-label">Tasks</span>
-        <span id="stat-tasks" class="stat-value">0</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Schedules</span>
-        <span id="stat-schedules" class="stat-value">0</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Events</span>
-        <span id="stat-events" class="stat-value">0</span>
+      <div class="panel">
+        <div class="panel-head"><h2>Agent States</h2></div>
+        <div id="agent-grid" class="agent-grid"><p class="empty">No agents activated yet.</p></div>
       </div>
     </section>
 
+    <!-- Task DAG + Event Stream -->
     <section class="panels">
       <div class="panel">
-        <div class="panel-head">
-          <h2>Agents</h2>
-          <button id="btn-refresh-agents" class="btn btn-ghost">Refresh</button>
-        </div>
-        <div id="agent-list" class="card-list"><p class="empty">No agents registered.</p></div>
-        <form id="agent-form" class="inline-form">
-          <input type="text" name="name" placeholder="Agent name" required />
-          <input type="text" name="role" placeholder="Role (e.g. reviewer)" required />
-          <button type="submit" class="btn btn-primary">Register</button>
-        </form>
+        <div class="panel-head"><h2>Task Pipeline</h2><span class="hint" id="dag-hint">DAG</span></div>
+        <div id="task-pipeline" class="task-pipeline"><p class="empty">Submit a request to see the task DAG.</p></div>
       </div>
-
       <div class="panel">
-        <div class="panel-head">
-          <h2>Tasks</h2>
-          <button id="btn-refresh-tasks" class="btn btn-ghost">Refresh</button>
-        </div>
-        <div id="task-list" class="card-list"><p class="empty">No tasks yet.</p></div>
-        <form id="task-form" class="inline-form">
-          <input type="text" name="title" placeholder="Task title" required />
-          <select name="priority">
-            <option value="low">Low</option>
-            <option value="medium" selected>Medium</option>
-            <option value="high">High</option>
-          </select>
-          <button type="submit" class="btn btn-primary">Create</button>
-        </form>
+        <div class="panel-head"><h2>Live Event Stream</h2><button id="btn-clear-log" class="btn btn-ghost btn-sm">Clear</button></div>
+        <div id="event-log" class="event-log"></div>
       </div>
     </section>
 
+    <!-- CEO Final Report -->
     <section class="panel wide">
-      <div class="panel-head">
-        <h2>Live Event Stream</h2>
-        <button id="btn-clear-log" class="btn btn-ghost">Clear</button>
-      </div>
-      <div id="event-log" class="event-log"></div>
+      <div class="panel-head"><h2>CEO Final Report</h2><span id="report-status" class="hint">Awaiting workflow</span></div>
+      <div id="final-report" class="final-report"><p class="empty">The CEO will synthesize a final report after the workforce completes all tasks.</p></div>
     </section>
   </main>
 
   <footer class="footer">
-    <span>NeuroOps Phase 1 - Foundation</span>
+    <span>NeuroOps Phase 2 - Autonomous Multi-Agent Intelligence</span>
     <span id="clock"></span>
   </footer>
 
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
