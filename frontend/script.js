@@ -15,7 +15,7 @@ let pointer = new THREE.Vector2();
 let hoveredNode = null;
 let tooltipEl = null;
 let speechRecognition = null;
-let activeHoldMs = 60000;
+let activeHoldMs = 300000; // 5 minutes
 let settings = { provider: "stub", apiKey: "", modelName: "" };
 
 /* =========================================================== Helpers */
@@ -47,7 +47,7 @@ const STATE_EMISSIVE = {
   failed: 0x4a0b0b,
   inactive: 0x2f3338,
 };
-const MIN_STATE_DISPLAY_MS = 60000;
+const MIN_STATE_DISPLAY_MS = 300000; // 5 minutes - keep color/state visible until task completes
 
 function initThree() {
   const container = el("three-canvas");
@@ -746,7 +746,15 @@ async function submitWorkflowRequest(req, options = {}) {
     if (result && result.prompt_output) {
       setPromptOutput(result.prompt_output, result.provider || settings.provider, result.model_name || settings.modelName);
     } else {
-      setPromptOutput(`No direct prompt output was returned.`, settings.provider, settings.modelName);
+      // Don't show a modal for empty prompt output. Refresh agents so the
+      // visualization updates (agents will change colors as events stream).
+      try {
+        await refreshAgents();
+        el("final-report").innerHTML = '<p class="empty">Workflow started. Visualizing agent activity.</p>';
+      } catch (e) {
+        // Fallback message if agents can't be refreshed
+        el("final-report").innerHTML = '<p class="empty">Workflow started. No prompt output to display.</p>';
+      }
     }
     input.value = "";
   } catch (err) {
